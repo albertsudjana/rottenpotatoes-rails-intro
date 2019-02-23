@@ -41,7 +41,10 @@ class MoviesController < ApplicationController
     if ratingKeys != session[:ratings] or sortBy != session[:sortBy]
       session[:ratings] = ratingKeys
       session[:sortBy] = sortBy
-      hash = Hash.new {|hash, key| hash[key] = 1 }
+      hash = {}
+      ratingKeys.each do |x|
+        hash[x] = 1
+      end
       redirect_to :ratings => hash, :sort => sortBy
       return
     end

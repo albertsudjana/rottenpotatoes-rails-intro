@@ -42,7 +42,8 @@ class MoviesController < ApplicationController
       session[:ratings] = ratingKeys
       session[:sortBy] = sortBy
       hash = Hash.new {|hash, key| hash[key] = 1 }
-      redirect_to movies_path(:ratings => hash, :sort => sortBy)
+      redirect_to :ratings => hash, :sort => sortBy
+      return
     end
 
     if sortBy == 'title'

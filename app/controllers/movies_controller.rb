@@ -20,22 +20,33 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = getRatings()
     sortBy = params[:sort]
-    session[:ratings] = @all_ratings
+    if session[:ratings] == nil
+      session[:ratings] = @all_ratings
+    end
     ratingKeys = nil
     if params[:ratings] != nil
       ratingKeys = params[:ratings].keys 
     end
+    puts ratingKeys
+    puts []
+    session[:ratings] = ratingKeys || session[:ratings] 
 
-    session[:ratings] = ratingKeys || session[:ratings] || []
+    @ratingsNow = session[:ratings]
 
-    @ratingsNow = session[:ratings] || []
+    if sortBy == nil
+      sortBy = session[:sortBy]
+    end
+
+    session[:sortBy] = sortBy
 
     if sortBy == 'title'
       @title_header = 'hilite'
-      @movies = Movie.order(:title)
+      tempMovies = Movie.with_ratings(@ratingsNow)
+      @movies = tempMovies.order(:title)
     elsif sortBy == 'release_date'
       @release_date_header = 'hilite'
-      @movies = Movie.order(:release_date)
+      tempMovies = Movie.with_ratings(@ratingsNow)
+      @movies = tempMovies.order(:release_date)
     else
       @movies = Movie.with_ratings(@ratingsNow)
     end

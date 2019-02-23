@@ -14,7 +14,7 @@ class MoviesController < ApplicationController
     result = []
     ratings = Movie.select(:rating).map(&:rating).uniq
     ratings.each { |r| result.push(r) }
-    return result
+    return result.sort_by!{ |m| m.downcase }
   end
 
   def index

@@ -10,8 +10,26 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
+  def getRatings()
+    result = []
+    ratings = Movie.select(:rating).map(&:rating).uniq
+    ratings.each { |r| result.push(r) }
+    return result
+  end
+
   def index
+    @all_ratings = getRatings()
     sortBy = params[:sort]
+    session[:ratings] = @all_ratings
+    ratingKeys = nil
+    if params[:ratings] != nil
+      ratingKeys = params[:ratings].keys 
+    end
+
+    session[:ratings] = ratingKeys || session[:ratings] || []
+
+    @ratingsNow = session[:ratings] || []
+
     if sortBy == 'title'
       @title_header = 'hilite'
       @movies = Movie.order(:title)
@@ -19,7 +37,7 @@ class MoviesController < ApplicationController
       @release_date_header = 'hilite'
       @movies = Movie.order(:release_date)
     else
-      @movies = Movie.all
+      @movies = Movie.with_ratings(@ratingsNow)
     end
   end
 

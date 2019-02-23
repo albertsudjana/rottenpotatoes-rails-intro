@@ -27,9 +27,10 @@ class MoviesController < ApplicationController
     if params[:ratings] != nil
       ratingKeys = params[:ratings].keys 
     end
-    puts ratingKeys
-    puts []
-    session[:ratings] = ratingKeys || session[:ratings] 
+    
+    if ratingKeys == nil
+      ratingKeys = session[:ratings]
+    end
 
     @ratingsNow = session[:ratings]
 
@@ -37,7 +38,12 @@ class MoviesController < ApplicationController
       sortBy = session[:sortBy]
     end
 
-    session[:sortBy] = sortBy
+    if ratingKeys != session[:ratings] or sortBy != session[:sortBy]
+      session[:ratings] = ratingKeys
+      session[:sortBy] = sortBy
+      hash = Hash.new {|hash, key| hash[key] = 1 }
+      redirect_to movies_path(:ratings => hash, :sort => sortBy)
+    end
 
     if sortBy == 'title'
       @title_header = 'hilite'
